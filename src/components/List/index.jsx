@@ -1,20 +1,47 @@
 import React, { Component } from 'react'
 
 class List extends Component {
-  handleChangeStatus = (item) => {
-    this.props.getClickItem(item)
+  // 进行中更改选中状态为完成
+  changeProToDone = (e, item, index) => {
+    this.props.addDoneData(item, index)
+  }
+
+  changeDoneToPro = (e, item, index) => {
+    this.props.addProcessData(item, index)
+  }
+
+  clickProcessData = (item, index) => {
+    this.props.delProcessData(item, index)
+  }
+
+  clickDoneData = (item, index) => {
+    this.props.delDoneData(item, index)
+  }
+
+  changeInputVal = (e, index) => {
+    this.props.changeProInputVal(e.target.value, index)
   }
 
   createProgessList = (listArr) => {
     return listArr.map((item, index) => {
       return (
-        <li
-          key={`${item}_{index}`}
-          onDoubleClick={() => this.handleChangeStatus(item)}
-        >
-          <input type='checkbox' />
-          <p>{item}</p>
-          <a href="javascript:remove(2)">-</a>
+        <li key={`${item}_${index}`}>
+          <input
+            type='checkbox'
+            onChange={(e) => this.changeProToDone(e, item, index)}
+          />
+          <p>
+            <input
+              value={item}
+              onChange={(e) => this.changeInputVal(e, index)}
+            />
+          </p>
+          <a
+            href="javascript:remove(2)"
+            onClick={() => this.clickProcessData(item, index)}
+          >
+            -
+          </a>
         </li>
       )
     })
@@ -22,8 +49,19 @@ class List extends Component {
 
   createDoneList = (list) => {
     return list.map((item, index) => (
-      <li key={`${item}_{index}`}>
-        {item}
+      <li key={`${item}_${index}`}>
+        <input
+          type='checkbox'
+          checked={true}
+          onChange={(e) => this.changeDoneToPro(e, item, index)}
+        />
+        <p>{item}</p>
+        <a
+          href="javascript:remove(2)"
+          onClick={() => this.clickDoneData(item, index)}
+        >
+          -
+          </a>
       </li>
     ))
   }
@@ -39,13 +77,18 @@ class List extends Component {
         <ol id="todolist" className="demo-box">
           {this.createProgessList(listArr)}
         </ol>
-        <h2>
-          已经完成
-          <span id="donecount">{doneList.length}</span>
-        </h2>
-        <ul id="donelist">
-          {this.createDoneList(doneList)}
-        </ul>
+        {
+          !!doneList.length &&
+          <>
+            <h2>
+              已经完成
+              <span id="donecount">{doneList.length}</span>
+            </h2>
+            <ul id="donelist">
+              {this.createDoneList(doneList)}
+            </ul>
+          </>
+        }
       </section>
     )
   }
